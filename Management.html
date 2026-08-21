@@ -34,7 +34,7 @@
             color: #333;
         }
 
-        /* KPI CARDS */
+        
         .kpi-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -76,7 +76,7 @@
             border-left: 5px solid #9c27b0;
         }
 
-        /* MAIN SECTIONS */
+    
         .section {
             background: white;
             padding: 25px;
@@ -85,7 +85,7 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.08);
         }
 
-        /* COST BREAKDOWN */
+        
         .cost-item {
             margin-bottom: 20px;
         }
@@ -135,7 +135,7 @@
             background-color: #b197fc;
         }
 
-        /* ALERTS */
+        
         .alert {
             padding: 15px;
             border-radius: 8px;
@@ -159,7 +159,7 @@
             margin-bottom: 5px;
         }
 
-        /* RESPONSIVE */
+        
         @media (max-width: 800px) {
             .kpi-container {
                 grid-template-columns: repeat(2, 1fr);
@@ -206,7 +206,7 @@
         </div>
 
 
-        <!-- COST BREAKDOWN -->
+
         <div class="section">
 
             <h2>Cost Breakdown</h2>
@@ -273,7 +273,7 @@
         </div>
 
 
-        <!-- DISCREPANCY ALERTS -->
+        
         <div class="section">
 
             <h2>Discrepancy Alerts</h2>
@@ -287,7 +287,7 @@
 
     <script>
 
-        // Sample transaction data
+    
         const transactions = [
             {
                 name: "Transaction #001",
@@ -312,11 +312,11 @@
         ];
 
 
-        // Get the alert container
+        
         const alertContainer = document.getElementById("alertContainer");
 
 
-        // Check every transaction
+        
         transactions.forEach(transaction => {
 
             if (transaction.expected !== transaction.actual) {
@@ -342,7 +342,7 @@
         });
 
 
-        // If there are no alerts
+        
         if (alertContainer.innerHTML === "") {
 
             alertContainer.innerHTML = `
