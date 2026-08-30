@@ -6,22 +6,18 @@ import Button from './common/Button'
 export default function Home() {
   return (
     <main>
-      {/* HERO SECTION ONLY - Modules section REMOVED */}
       <section className="relative overflow-hidden border-b border-border">
-        {/* Your local image background */}
         <div 
           className="absolute inset-0 h-full w-full opacity-40"
           style={{
-            backgroundImage: 'url("/src/assets/solar.jpg")',
+            backgroundImage: 'url("/solar.jpg")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         />
         
-        {/* Gradient overlay - keeps text readable */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bg/80 via-bg/60 to-bg" />
         
-        {/* Your hero content */}
         <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-32">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-power">
             Inventory Management System

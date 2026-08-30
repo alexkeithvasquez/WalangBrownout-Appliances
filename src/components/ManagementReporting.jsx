@@ -50,7 +50,7 @@ export default function ManagementReporting() {
         <PageHeader
           eyebrow="MOD-04 · Management"
           title="Management Reporting"
-        />
+            />
         <select
           defaultValue="Q2 2026"
           className="rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-ink"
