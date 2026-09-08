@@ -6,6 +6,9 @@ import PurchasingDashboard from './components/PurchasingDashboard'
 import WarehouseScannerApp from './components/WarehouseScannerApp'
 import OnlineStorefront from './components/OnlineStorefront'
 import ManagementReporting from './components/ManagementReporting'
+import Login from './components/Login'
+import Signup from './components/Signup'
+import { AuthProvider } from './context/AuthContext'
 import './App.css'
 
 function NotFound() {
@@ -23,22 +26,26 @@ function NotFound() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="flex min-h-screen flex-col bg-bg font-body text-ink">
-        <Navbar />
-        <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/purchasing" element={<PurchasingDashboard />} />
-            <Route path="/warehouse" element={<WarehouseScannerApp />} />
-            <Route path="/storefront" element={<OnlineStorefront />} />
-            <Route path="/reporting" element={<ManagementReporting />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="flex min-h-screen flex-col bg-bg font-body text-ink">
+          <Navbar />
+          <div className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/purchasing" element={<PurchasingDashboard />} />
+              <Route path="/warehouse" element={<WarehouseScannerApp />} />
+              <Route path="/storefront" element={<OnlineStorefront />} />
+              <Route path="/reporting" element={<ManagementReporting />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
