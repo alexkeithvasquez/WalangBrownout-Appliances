@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import Navbar from './components/common/Navbar'
 import Footer from './components/common/Footer'
+import ProtectedRoute from './components/common/ProtectedRoute'
 import Home from './components/Home'
 import PurchasingDashboard from './components/PurchasingDashboard'
 import WarehouseScannerApp from './components/WarehouseScannerApp'
@@ -24,26 +25,74 @@ function NotFound() {
   )
 }
 
+function AppLayout() {
+  const location = useLocation()
+
+  // Only show footer on these paths
+  const showFooter = ['/'].includes(location.pathname)
+
+  return (
+    <div className="flex min-h-screen flex-col bg-bg font-body text-ink">
+      <Navbar />
+      <div className="flex-1">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/purchasing"
+            element={
+              <ProtectedRoute>
+                <PurchasingDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/warehouse"
+            element={
+              <ProtectedRoute>
+                <WarehouseScannerApp />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/storefront"
+            element={
+              <ProtectedRoute>
+                <OnlineStorefront />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reporting"
+            element={
+              <ProtectedRoute>
+                <ManagementReporting />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+      {showFooter && <Footer />}
+    </div>
+  )
+}
+
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="flex min-h-screen flex-col bg-bg font-body text-ink">
-          <Navbar />
-          <div className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/purchasing" element={<PurchasingDashboard />} />
-              <Route path="/warehouse" element={<WarehouseScannerApp />} />
-              <Route path="/storefront" element={<OnlineStorefront />} />
-              <Route path="/reporting" element={<ManagementReporting />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
-          <Footer />
-        </div>
+        <AppLayout />
       </BrowserRouter>
     </AuthProvider>
   )

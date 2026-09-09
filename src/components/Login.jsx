@@ -42,61 +42,87 @@ export default function Login() {
   }
 
   return (
-    <main className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-12">
-      <PageHeader eyebrow="Account" title="Log in" subtitle="Access your inventory dashboard." />
+    <main className="grid min-h-[calc(100vh-57px)] grid-cols-1 lg:grid-cols-2">
+      {/* Image side */}
+      <div className="relative hidden overflow-hidden border-r border-border lg:block">
+        <div
+          className="absolute inset-0 h-full w-full"
+          style={{
+            backgroundImage: 'url("/login-bg.jpg")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-bg/10" />
+        <div className="relative flex h-full flex-col justify-end p-10">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-power">
+            Inventory Management System
+          </p>
+          <h2 className="mt-3 max-w-sm font-display text-2xl font-bold text-ink">
+            Real-time visibility across every module.
+          </h2>
+        </div>
+      </div>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-xs uppercase tracking-wider text-muted">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs uppercase tracking-wider text-muted">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-md border border-border bg-surface-2 px-3 py-2 pr-10 text-sm text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted hover:text-ink"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                tabIndex={-1}
-              >
-                <EyeIcon open={showPassword} />
-              </button>
-            </div>
-          </div>
+      {/* Form side */}
+      <div className="flex flex-col justify-center px-6 py-12">
+        <div className="mx-auto w-full max-w-md">
+          <PageHeader eyebrow="Account" title="Log in" subtitle="Access your inventory dashboard." />
 
-          {error && <p className="text-sm text-danger">{error}</p>}
+          <Card className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="mb-1 block text-xs uppercase tracking-wider text-muted">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="example@gmail.com"
+                  className="w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs uppercase tracking-wider text-muted">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full rounded-md border border-border bg-surface-2 px-3 py-2 pr-10 text-sm text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-muted hover:text-ink"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    tabIndex={-1}
+                  >
+                    <EyeIcon open={showPassword} />
+                  </button>
+                </div>
+              </div>
 
-          <Button type="submit" variant="primary" className="w-full">
-            Log in
-          </Button>
-        </form>
+              {error && <p className="text-sm text-danger">{error}</p>}
 
-        <p className="mt-5 text-center text-sm text-muted">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-online hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </Card>
+              <Button type="submit" variant="primary" className="w-full">
+                Log in
+              </Button>
+            </form>
+
+            <p className="mt-5 text-center text-sm text-muted">
+              Don't have an account?{' '}
+              <Link to="/signup" className="text-online hover:underline">
+                Sign up
+              </Link>
+            </p>
+          </Card>
+        </div>
+      </div>
     </main>
   )
 }

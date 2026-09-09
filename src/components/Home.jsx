@@ -10,7 +10,7 @@ export default function Home() {
         <div 
           className="absolute inset-0 h-full w-full opacity-40"
           style={{
-            backgroundImage: 'url("/solar.jpg")',
+            backgroundImage: 'url("/home-bg.avif")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
