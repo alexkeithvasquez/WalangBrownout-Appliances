@@ -1,44 +1,88 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import Card from './common/Card'
-import Button from './common/Button'
-import PageHeader from './common/PageHeader'
-import { useAuth } from '../context/AuthContext'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Card from "./common/Card";
+import Button from "./common/Button";
+import PageHeader from "./common/PageHeader";
+import { useAuth } from "../context/AuthContext";
+
+const DEMO_ACCOUNTS = [
+  {
+    role: "Manager",
+    email: "manager@walangbrownout.ph",
+    password: "manager123",
+  },
+  { role: "Staff", email: "staff@walangbrownout.ph", password: "staff123" },
+  { role: "Customer", email: "customer@gmail.com", password: "customer123" },
+];
 
 function EyeIcon({ open }) {
   return !open ? (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12c1.292 4.338 5.31 7.5 10.066 7.5 1.556 0 3.036-.338 4.368-.946M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      className="h-4 w-4"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.98 8.223A10.477 10.477 0 001.934 12c1.292 4.338 5.31 7.5 10.066 7.5 1.556 0 3.036-.338 4.368-.946M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+      />
     </svg>
   ) : (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      className="h-4 w-4"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+      />
     </svg>
-  )
+  );
 }
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const { login } = useAuth()
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   function handleSubmit(e) {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
     if (!email || !password) {
-      setError('Please fill in both fields.')
-      return
+      setError("Please fill in both fields.");
+      return;
     }
-    const result = login(email, password)
+    const result = login(email, password);
     if (!result.ok) {
-      setError(result.error)
-      return
+      setError(result.error);
+      return;
     }
-    navigate('/')
+    navigate("/");
+  }
+
+  function quickLogin(account) {
+    setError("");
+    const result = login(account.email, account.password);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    navigate("/");
   }
 
   return (
@@ -49,8 +93,8 @@ export default function Login() {
           className="absolute inset-0 h-full w-full"
           style={{
             backgroundImage: 'url("/login-bg.jpg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-bg/10" />
@@ -67,7 +111,11 @@ export default function Login() {
       {/* Form side */}
       <div className="flex flex-col justify-center px-6 py-12">
         <div className="mx-auto w-full max-w-md">
-          <PageHeader eyebrow="Account" title="Log in" subtitle="Access your inventory dashboard." />
+          <PageHeader
+            eyebrow="Account"
+            title="Log in"
+            subtitle="Access your inventory dashboard."
+          />
 
           <Card className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,7 +137,7 @@ export default function Login() {
                 </label>
                 <div className="relative">
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
@@ -99,7 +147,9 @@ export default function Login() {
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-muted hover:text-ink"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     tabIndex={-1}
                   >
                     <EyeIcon open={showPassword} />
@@ -112,10 +162,36 @@ export default function Login() {
               <Button type="submit" variant="primary" className="w-full">
                 Log in
               </Button>
+
+              <div className="mt-6">
+                <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted">
+                  <span className="h-px flex-1 bg-border" />
+                  Demo accounts
+                  <span className="h-px flex-1 bg-border" />
+                </div>
+                <div className="mt-3 space-y-2">
+                  {DEMO_ACCOUNTS.map((account) => (
+                    <button
+                      key={account.email}
+                      type="button"
+                      onClick={() => quickLogin(account)}
+                      className="flex w-full items-center justify-between rounded-md border border-border bg-surface-2 px-3 py-2 text-left text-sm text-ink transition-colors hover:border-power/50"
+                    >
+                      <span>
+                        <span className="font-medium">{account.role}</span>
+                        <span className="ml-2 text-xs text-muted">
+                          {account.email}
+                        </span>
+                      </span>
+                      <span className="text-xs text-power">Log in →</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </form>
 
             <p className="mt-5 text-center text-sm text-muted">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <Link to="/signup" className="text-online hover:underline">
                 Sign up
               </Link>
@@ -124,5 +200,5 @@ export default function Login() {
         </div>
       </div>
     </main>
-  )
+  );
 }

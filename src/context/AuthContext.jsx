@@ -5,6 +5,40 @@ const AuthContext = createContext(null)
 const VALID_ROLES = ['customer', 'staff', 'manager', 'admin']
 const SIGNUP_ROLES = ['customer', 'staff', 'manager']
 
+const DEMO_USERS = [
+  {
+    name: 'Alex Keith Vasquez',
+    email: 'manager@walangbrownout.ph',
+    password: 'manager123',
+    role: 'manager',
+  },
+  {
+    name: 'Jenny Santos',
+    email: 'staff@walangbrownout.ph',
+    password: 'staff123',
+    role: 'staff',
+  },
+  {
+    name: 'Miguel Reyes',
+    email: 'customer@gmail.com',
+    password: 'customer123',
+    role: 'customer',
+  },
+]
+
+function seedDemoUsers() {
+  const users = getUsers()
+  const existingEmails = new Set(users.map((u) => normalizeEmail(u.email)))
+
+  const missing = DEMO_USERS.filter(
+    (demo) => !existingEmails.has(normalizeEmail(demo.email)),
+  )
+
+  if (missing.length > 0) {
+    saveUsers([...users, ...missing])
+  }
+}
+
 function normalizeEmail(email) {
   return email.trim().toLowerCase()
 }
@@ -50,7 +84,10 @@ function getStoredSession() {
 }
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(getStoredSession)
+  const [currentUser, setCurrentUser] = useState(() => {
+    seedDemoUsers()
+    return getStoredSession()
+  })
 
   function startSession(user) {
     const session = createSession(user)
