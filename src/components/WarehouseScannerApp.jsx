@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Card from './common/Card'
 import Badge from './common/Badge'
 import Button from './common/Button'
@@ -31,6 +31,60 @@ function readList(key) {
 
 function writeList(key, value) {
   localStorage.setItem(key, JSON.stringify(value))
+}
+
+const SEED_PRODUCTS = [
+  {
+    sku: 'AC-Unit-12k',
+    name: 'Portable AC 12k BTU',
+    category: 'Air Conditioners',
+    price: 18500,
+    reorderPoint: 40,
+    openingQty: 18,
+    bin: 'C-01-1',
+    expiry: '',
+    registeredAt: new Date().toISOString(),
+  },
+  {
+    sku: 'Smart-Therm-X',
+    name: 'Smart Thermostat X',
+    category: 'Thermostats',
+    price: 4200,
+    reorderPoint: 15,
+    openingQty: 9,
+    bin: 'B-02-1',
+    expiry: '',
+    registeredAt: new Date().toISOString(),
+  },
+  {
+    sku: 'Filter-Carbon-9m',
+    name: 'Carbon Air Filter',
+    category: 'Filters',
+    price: 650,
+    reorderPoint: 25,
+    openingQty: 30,
+    bin: 'C-14-2',
+    expiry: '',
+    registeredAt: new Date().toISOString(),
+  },
+  {
+    sku: 'Air-Purifier-Mini',
+    name: 'Air Purifier Mini',
+    category: 'Air Purifiers',
+    price: 6900,
+    reorderPoint: 20,
+    openingQty: 27,
+    bin: 'D-05-3',
+    expiry: '',
+    registeredAt: new Date().toISOString(),
+  },
+]
+
+function seedProducts() {
+  const existing = readList(PRODUCTS_KEY)
+  if (existing.length === 0) {
+    writeList(PRODUCTS_KEY, SEED_PRODUCTS)
+  }
 }
 
 const INITIAL_PICK_ITEMS = [
@@ -746,10 +800,14 @@ function RegisterItemTab() {
 export default function WarehouseScannerApp() {
   const [tab, setTab] = useState('pick')
 
+  useEffect(() => {
+    seedProducts()
+  }, [])
+
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       <PageHeader
-        eyebrow="MOD-02 · Warehouse"
         title="Warehouse / Scanner App"
         subtitle="Register new SKUs before receiving them into inventory."
       />

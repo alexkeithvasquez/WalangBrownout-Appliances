@@ -48,7 +48,6 @@ export default function ManagementReporting() {
     <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
       <div className="mb-8 flex items-start justify-between gap-4">
         <PageHeader
-          eyebrow="MOD-04 · Management"
           title="Management Reporting"
             />
         <select

@@ -144,7 +144,7 @@ export default function OnlineStorefront() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
-        <PageHeader eyebrow="MOD-03 · Storefront" title="Online Storefront" />
+        <PageHeader title="Online Storefront" />
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
