@@ -23,6 +23,11 @@ const LINKS = [
     label: 'Reporting',
     roles: ['manager', 'admin'],
   },
+  {
+  to: '/orders',
+  label: 'My Orders',
+  roles: ['customer', 'staff', 'manager', 'admin'],
+},
 ]
 
 function navLinkClass({ isActive }) {
