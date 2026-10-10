@@ -180,7 +180,7 @@ export default function Signup() {
           </h2>
 
           <p className="mt-3 max-w-sm text-sm text-muted">
-            Create your account and choose the account type that fits you.
+        Create your staff account and start managing inventory.
           </p>
         </div>
       </div>
