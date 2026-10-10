@@ -3,6 +3,7 @@ import Card from './common/Card'
 import Badge from './common/Badge'
 import Button from './common/Button'
 import PageHeader from './common/PageHeader'
+import { apiRequest } from '../lib/api'
 
 const TABS = [
   { id: 'pick', label: 'Pick' },
@@ -471,14 +472,33 @@ function RegisterItemTab() {
     expiry: '',
   })
 
-  const [registered, setRegistered] = useState(() =>
-    readList(PRODUCTS_KEY).slice(0, 5),
-  )
+  const [registered, setRegistered] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [message, setMessage] = useState({
     type: '',
     text: '',
   })
+
+  useEffect(() => {
+    let active = true
+
+    apiRequest('/products?per_page=5')
+      .then((response) => {
+        if (active) setRegistered(response.data)
+      })
+      .catch((error) => {
+        if (active) setMessage({ type: 'error', text: error.message })
+      })
+      .finally(() => {
+        if (active) setIsLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const categories = [
     'Air Conditioners',
@@ -495,7 +515,7 @@ function RegisterItemTab() {
     }))
   }
 
-  function handleRegister(event) {
+  async function handleRegister(event) {
     event.preventDefault()
     setMessage({ type: '', text: '' })
 
@@ -506,7 +526,6 @@ function RegisterItemTab() {
       price: Number(form.price),
       reorderPoint: Number(form.reorderPoint),
       openingQty: Number(form.openingQty),
-      registeredAt: new Date().toISOString(),
     }
 
     if (
@@ -537,63 +556,29 @@ function RegisterItemTab() {
       return
     }
 
-    const products = readList(PRODUCTS_KEY)
-
-    const duplicateSku = products.some(
-      (product) =>
-        product.sku.toLowerCase() === item.sku.toLowerCase(),
-    )
-
-    if (duplicateSku) {
-      setMessage({
-        type: 'error',
-        text: 'That SKU is already registered. Use Receive to add another batch.',
+    setIsSubmitting(true)
+    try {
+      const response = await apiRequest('/products', {
+        method: 'POST',
+        body: item,
       })
-      return
+      setRegistered((previous) => [response.data, ...previous].slice(0, 5))
+      setForm({
+        sku: '',
+        name: '',
+        category: 'Other',
+        price: '',
+        reorderPoint: '',
+        openingQty: '',
+        bin: '',
+        expiry: '',
+      })
+      setMessage({ type: 'success', text: `${response.data.name} was registered.` })
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message })
+    } finally {
+      setIsSubmitting(false)
     }
-
-    writeList(PRODUCTS_KEY, [item, ...products])
-
-    if (item.openingQty > 0) {
-      const openingBatch = {
-        id: `${Date.now()}`,
-        sku: item.sku,
-        qty: item.openingQty,
-        batch: `OPEN-${Math.floor(1000 + Math.random() * 9000)}`,
-        receiptDate: new Date().toISOString(),
-        expiry: new Date(item.expiry).toISOString(),
-        bin: item.bin,
-      }
-
-      writeList(BATCHES_KEY, [
-        openingBatch,
-        ...readList(BATCHES_KEY),
-      ])
-    }
-
-    setRegistered((previous) =>
-      [item, ...previous].slice(0, 5),
-    )
-
-    setForm({
-      sku: '',
-      name: '',
-      category: 'Other',
-      price: '',
-      reorderPoint: '',
-      openingQty: '',
-      bin: '',
-      expiry: '',
-    })
-
-    setMessage({
-      type: 'success',
-      text: `${item.name} was registered${
-        item.openingQty > 0
-          ? ' and opening stock was added'
-          : ''
-      }.`,
-    })
   }
 
   return (
@@ -755,11 +740,13 @@ function RegisterItemTab() {
             </p>
           )}
 
-          <Button type="submit" variant="primary">
-            Register item
+          <Button type="submit" variant="primary" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : 'Register item'}
           </Button>
         </div>
       </form>
+
+      {isLoading && <p className="mt-4 text-sm text-muted">Loading products…</p>}
 
       {registered.length > 0 && (
         <div className="mt-6 border-t border-border pt-4">

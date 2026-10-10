@@ -5,24 +5,6 @@ import Button from './common/Button'
 import PageHeader from './common/PageHeader'
 import { useAuth } from '../context/AuthContext'
 
-const ACCOUNT_TYPES = [
-  {
-    value: 'customer',
-    label: 'Customer',
-    description: 'Browse products in the online storefront.',
-  },
-  {
-    value: 'staff',
-    label: 'Staff',
-    description: 'Access purchasing, warehouse, and storefront modules.',
-  },
-  {
-    value: 'manager',
-    label: 'Manager',
-    description: 'Access operational modules and management reports.',
-  },
-]
-
 const INPUT_CLASS =
   'w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-power disabled:opacity-60'
 
@@ -120,7 +102,6 @@ function PasswordField({
 export default function Signup() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState('customer')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
@@ -128,10 +109,6 @@ export default function Signup() {
 
   const { signup } = useAuth()
   const navigate = useNavigate()
-
-  const selectedAccountType = ACCOUNT_TYPES.find(
-    (accountType) => accountType.value === role
-  )
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -158,20 +135,10 @@ export default function Signup() {
       return
     }
 
-    if (!ACCOUNT_TYPES.some((accountType) => accountType.value === role)) {
-      setError('Please select a valid account type.')
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
-      const result = await signup(
-        cleanName,
-        cleanEmail,
-        password,
-        role
-      )
+      const result = await signup(cleanName, cleanEmail, password)
 
       if (!result?.ok) {
         setError(
@@ -271,38 +238,9 @@ export default function Signup() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="signup-role" className={LABEL_CLASS}>
-                  Account type
-                </label>
-
-                <select
-                  id="signup-role"
-                  name="role"
-                  value={role}
-                  onChange={(event) => setRole(event.target.value)}
-                  required
-                  disabled={isSubmitting}
-                  aria-describedby="signup-role-description"
-                  className={INPUT_CLASS}
-                >
-                  {ACCOUNT_TYPES.map((accountType) => (
-                    <option
-                      key={accountType.value}
-                      value={accountType.value}
-                    >
-                      {accountType.label}
-                    </option>
-                  ))}
-                </select>
-
-                <p
-                  id="signup-role-description"
-                  className="mt-2 text-xs text-muted"
-                >
-                  {selectedAccountType?.description}
-                </p>
-              </div>
+              <p className="rounded-md border border-border bg-surface-2 px-3 py-2 text-xs text-muted">
+                New signups are staff accounts. Admin access is assigned separately.
+              </p>
 
               <PasswordField
                 id="signup-password"

@@ -5,16 +5,6 @@ import Button from "./common/Button";
 import PageHeader from "./common/PageHeader";
 import { useAuth } from "../context/AuthContext";
 
-const DEMO_ACCOUNTS = [
-  {
-    role: "Manager",
-    email: "manager@walangbrownout.ph",
-    password: "manager123",
-  },
-  { role: "Staff", email: "staff@walangbrownout.ph", password: "staff123" },
-  { role: "Customer", email: "customer@gmail.com", password: "customer123" },
-];
-
 function EyeIcon({ open }) {
   return !open ? (
     <svg
@@ -57,32 +47,28 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     if (!email || !password) {
       setError("Please fill in both fields.");
       return;
     }
-    const result = login(email, password);
-    if (!result.ok) {
-      setError(result.error);
-      return;
+    setIsSubmitting(true);
+    try {
+      const result = await login(email, password);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      navigate("/");
+    } finally {
+      setIsSubmitting(false);
     }
-    navigate("/");
-  }
-
-  function quickLogin(account) {
-    setError("");
-    const result = login(account.email, account.password);
-    if (!result.ok) {
-      setError(result.error);
-      return;
-    }
-    navigate("/");
   }
 
   return (
@@ -127,6 +113,7 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
                   placeholder="example@gmail.com"
                   className="w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
                 />
@@ -140,6 +127,7 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={isSubmitting}
                     placeholder="Enter password"
                     className="w-full rounded-md border border-border bg-surface-2 px-3 py-2 pr-10 text-sm text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
                   />
@@ -159,35 +147,9 @@ export default function Login() {
 
               {error && <p className="text-sm text-danger">{error}</p>}
 
-              <Button type="submit" variant="primary" className="w-full">
-                Log in
+              <Button type="submit" variant="primary" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Signing in..." : "Log in"}
               </Button>
-
-              <div className="mt-6">
-                <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted">
-                  <span className="h-px flex-1 bg-border" />
-                  Demo accounts
-                  <span className="h-px flex-1 bg-border" />
-                </div>
-                <div className="mt-3 space-y-2">
-                  {DEMO_ACCOUNTS.map((account) => (
-                    <button
-                      key={account.email}
-                      type="button"
-                      onClick={() => quickLogin(account)}
-                      className="flex w-full items-center justify-between rounded-md border border-border bg-surface-2 px-3 py-2 text-left text-sm text-ink transition-colors hover:border-power/50"
-                    >
-                      <span>
-                        <span className="font-medium">{account.role}</span>
-                        <span className="ml-2 text-xs text-muted">
-                          {account.email}
-                        </span>
-                      </span>
-                      <span className="text-xs text-power">Log in →</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
             </form>
 
             <p className="mt-5 text-center text-sm text-muted">

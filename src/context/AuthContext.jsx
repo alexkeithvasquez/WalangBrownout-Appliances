@@ -1,204 +1,108 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { apiRequest, TOKEN_KEY, USER_KEY } from '../lib/api'
 
 const AuthContext = createContext(null)
 
-const VALID_ROLES = ['customer', 'staff', 'manager', 'admin']
-const SIGNUP_ROLES = ['customer', 'staff', 'manager']
-
-const DEMO_USERS = [
-  {
-    name: 'Alex Keith Vasquez',
-    email: 'manager@walangbrownout.ph',
-    password: 'manager123',
-    role: 'manager',
-  },
-  {
-    name: 'Jenny Santos',
-    email: 'staff@walangbrownout.ph',
-    password: 'staff123',
-    role: 'staff',
-  },
-  {
-    name: 'Miguel Reyes',
-    email: 'customer@gmail.com',
-    password: 'customer123',
-    role: 'customer',
-  },
-]
-
-function seedDemoUsers() {
-  const users = getUsers()
-  const existingEmails = new Set(users.map((u) => normalizeEmail(u.email)))
-
-  const missing = DEMO_USERS.filter(
-    (demo) => !existingEmails.has(normalizeEmail(demo.email)),
-  )
-
-  if (missing.length > 0) {
-    saveUsers([...users, ...missing])
-  }
+function clearStoredSession() {
+  localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(USER_KEY)
 }
 
-function normalizeEmail(email) {
-  return email.trim().toLowerCase()
-}
-
-function getUsers() {
-  try {
-    const users = JSON.parse(localStorage.getItem('wb_users') || '[]')
-    return Array.isArray(users) ? users : []
-  } catch {
-    return []
-  }
-}
-
-function saveUsers(users) {
-  localStorage.setItem('wb_users', JSON.stringify(users))
-}
-
-function createSession(user) {
-  return {
-    name: user.name,
-    email: user.email,
-    role: VALID_ROLES.includes(user.role) ? user.role : 'customer',
-  }
-}
-
-function getStoredSession() {
-  try {
-    const stored = JSON.parse(
-      localStorage.getItem('wb_current_user') || 'null'
-    )
-
-    if (!stored?.email) return null
-
-    const user = getUsers().find(
-      (account) =>
-        normalizeEmail(account.email) === normalizeEmail(stored.email)
-    )
-
-    return user ? createSession(user) : null
-  } catch {
-    return null
-  }
+function storeSession(payload) {
+  localStorage.setItem(TOKEN_KEY, payload.token)
+  localStorage.setItem(USER_KEY, JSON.stringify(payload.user))
+  return payload.user
 }
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(() => {
-    seedDemoUsers()
-    return getStoredSession()
-  })
+  const [currentUser, setCurrentUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  function startSession(user) {
-    const session = createSession(user)
+  useEffect(() => {
+    let active = true
 
-    localStorage.setItem('wb_current_user', JSON.stringify(session))
-    setCurrentUser(session)
-  }
-
-  function signup(name, email, password, role = 'customer') {
-    const cleanName = name.trim()
-    const cleanEmail = normalizeEmail(email)
-
-    if (!cleanName || !cleanEmail || !password) {
-      return {
-        ok: false,
-        error: 'Please fill in all fields.',
+    async function restoreSession() {
+      const token = localStorage.getItem(TOKEN_KEY)
+      if (!token) {
+        if (active) setIsLoading(false)
+        return
       }
-    }
 
-    if (password.length < 8) {
-      return {
-        ok: false,
-        error: 'Your password must contain at least 8 characters.',
-      }
-    }
-
-    if (!SIGNUP_ROLES.includes(role)) {
-      return {
-        ok: false,
-        error: 'Please select a valid account type.',
-      }
-    }
-
-    try {
-      const users = getUsers()
-
-      const emailExists = users.some(
-        (user) => normalizeEmail(user.email) === cleanEmail
-      )
-
-      if (emailExists) {
-        return {
-          ok: false,
-          error: 'An account with that email already exists.',
+      try {
+        const response = await apiRequest('/auth/user')
+        if (active) {
+          setCurrentUser(response.data)
+          localStorage.setItem(USER_KEY, JSON.stringify(response.data))
         }
-      }
-
-      // Demo only: immediately assigns the selected role.
-      // In production, Staff/Manager roles must require backend approval.
-      // Never store plaintext passwords in a production application.
-      const newUser = {
-        name: cleanName,
-        email: cleanEmail,
-        password,
-        role,
-      }
-
-      saveUsers([...users, newUser])
-      startSession(newUser)
-
-      return { ok: true }
-    } catch {
-      return {
-        ok: false,
-        error: 'Unable to save your account. Check browser storage and try again.',
+      } catch {
+        clearStoredSession()
+        if (active) setCurrentUser(null)
+      } finally {
+        if (active) setIsLoading(false)
       }
     }
-  }
 
-  function login(email, password) {
-    const cleanEmail = normalizeEmail(email)
+    restoreSession()
+    return () => {
+      active = false
+    }
+  }, [])
 
+  async function signup(name, email, password) {
     try {
-      const found = getUsers().find(
-        (user) =>
-          normalizeEmail(user.email) === cleanEmail &&
-          user.password === password
-      )
-
-      if (!found) {
-        return {
-          ok: false,
-          error: 'Invalid email or password.',
-        }
-      }
-
-      startSession(found)
-
+      const response = await apiRequest('/auth/register', {
+        method: 'POST',
+        body: {
+          name,
+          email,
+          password,
+          password_confirmation: password,
+          device_name: 'walangbrownout-web',
+        },
+        auth: false,
+      })
+      setCurrentUser(storeSession(response))
       return { ok: true }
-    } catch {
-      return {
-        ok: false,
-        error: 'Unable to sign in. Please try again.',
-      }
+    } catch (error) {
+      return { ok: false, error: error.message }
     }
   }
 
-  function logout() {
-    localStorage.removeItem('wb_current_user')
-    setCurrentUser(null)
+  async function login(email, password) {
+    try {
+      const response = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: { email, password, device_name: 'walangbrownout-web' },
+        auth: false,
+      })
+      setCurrentUser(storeSession(response))
+      return { ok: true }
+    } catch (error) {
+      return { ok: false, error: error.message }
+    }
+  }
+
+  async function logout() {
+    try {
+      if (localStorage.getItem(TOKEN_KEY)) {
+        await apiRequest('/auth/logout', { method: 'POST' })
+      }
+    } catch {
+      // Always clear the client session if the API is unavailable or the token expired.
+    } finally {
+      clearStoredSession()
+      setCurrentUser(null)
+    }
   }
 
   return (
-    <AuthContext.Provider
-      value={{ currentUser, signup, login, logout }}
-    >
+    <AuthContext.Provider value={{ currentUser, isLoading, signup, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext)
 
