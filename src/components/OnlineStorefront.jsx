@@ -11,6 +11,7 @@ const PRODUCTS = [
   {
     id: 'ac-12k',
     name: 'Portable AC 12k BTU',
+    image: '/images/products/AC-Unit-12k.webp',
     category: 'Air Conditioners',
     price: 18500,
     available: 12,
@@ -18,6 +19,7 @@ const PRODUCTS = [
   {
     id: 'therm-x',
     name: 'Smart Thermostat X',
+    image: '/images/products/Smart-Therm-X.webp',
     category: 'Thermostats',
     price: 4200,
     available: 2,
@@ -25,6 +27,7 @@ const PRODUCTS = [
   {
     id: 'filter-carbon',
     name: 'Carbon Air Filter',
+    image: '/images/products/Filter-Carbon-9m.webp',
     category: 'Filters',
     price: 650,
     available: 0,
@@ -32,6 +35,7 @@ const PRODUCTS = [
   {
     id: 'purifier-mini',
     name: 'Air Purifier Mini',
+    image: '/images/products/Air-Purifier-Mini.webp',
     category: 'Air Purifiers',
     price: 6900,
     available: 27,
@@ -204,8 +208,13 @@ export default function OnlineStorefront() {
             const inCart = cart[p.id] || 0
             return (
               <Card key={p.id} className="flex flex-col p-5">
-                <div className="mb-4 flex h-28 items-center justify-center rounded-md border border-border bg-surface-2 px-3 text-center font-mono text-xs text-muted">
-                  {p.name}
+                <div className="mb-4 flex h-44 items-center justify-center overflow-hidden rounded-md border border-border bg-white">
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    loading="lazy"
+                    className="h-full w-full object-contain p-2"
+                  />
                 </div>
                 <h3 className="font-display text-base font-semibold text-ink">{p.name}</h3>
                 <p className="mt-1 font-mono text-sm text-ink">{peso(p.price)}</p>
