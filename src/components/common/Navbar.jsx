@@ -2,37 +2,37 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const LINKS = [
+const NAV_GROUPS = [
   {
-    to: "/",
-    label: "Overview",
+    label: "Workspace",
     roles: ["staff", "admin"],
+    links: [{ to: "/", label: "Overview" }],
   },
   {
-    to: "/warehouse",
-    label: "Warehouse",
+    label: "Operations",
     roles: ["staff", "admin"],
+    links: [
+      { to: "/warehouse", label: "Warehouse" },
+      { to: "/purchasing", label: "Purchasing" },
+    ],
   },
   {
-    to: "/purchasing",
-    label: "Purchasing",
+    label: "Commerce",
     roles: ["staff", "admin"],
+    links: [
+      { to: "/storefront", label: "Storefront" },
+      { to: "/orders", label: "My Orders" },
+    ],
   },
   {
-    to: "/storefront",
-    label: "Storefront",
-    roles: ["staff", "admin"],
+    label: "Administration",
+    roles: ["admin"],
+    links: [{ to: "/reporting", label: "Reports" }],
   },
-  {
-    to: "/orders",
-    label: "My Orders",
-    roles: ["staff", "admin"],
-  },
-  { to: "/reporting", label: "Reports", roles: ["admin"] },
 ];
 
 function navLinkClass({ isActive }) {
-  return `rounded-md px-3 py-2 font-body text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-power ${
+  return `rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-power ${
     isActive
       ? "bg-power/10 text-power"
       : "text-muted hover:bg-surface-2 hover:text-ink"
@@ -41,25 +41,31 @@ function navLinkClass({ isActive }) {
 
 function Logo() {
   return (
-    <div className="flex h-7 w-7 items-center justify-center rounded-md bg-power/10">
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-power/20 bg-power/10">
       <svg
         viewBox="0 0 24 24"
         fill="currentColor"
         className="h-4 w-4 text-power"
+        aria-hidden="true"
       >
         <path d="M13 2L3 14h6l-1 8 10-12h-6l1-8z" />
       </svg>
-    </div>
+    </span>
   );
 }
 
 function UserDetails({ user }) {
+  const firstName = user?.name?.trim().split(/\s+/)[0] || "User";
+
   return (
-    <div className="flex items-center gap-2.5">
-      <span className="text-sm text-muted">
-        Hi, <span className="text-ink">{user.name.split(" ")[0]}</span>
-      </span>
-      <span className="rounded-md border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-medium capitalize text-power">
+    <div className="flex items-center gap-3">
+      <div className="text-right">
+        <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
+          Signed in as
+        </p>
+        <p className="text-sm font-medium text-ink">{firstName}</p>
+      </div>
+      <span className="rounded-md border border-border bg-surface-2 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-power">
         {user.role}
       </span>
     </div>
@@ -71,72 +77,54 @@ export default function Navbar() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
-  const visibleLinks = LINKS.filter((link) =>
-    link.roles.includes(currentUser?.role),
+  const visibleGroups = NAV_GROUPS.filter((group) =>
+    group.roles.includes(currentUser?.role),
   );
 
   function closeMenu() {
     setOpen(false);
   }
 
-  function handleLogout() {
-    logout();
+  async function handleLogout() {
+    await logout();
     closeMenu();
     navigate("/login", { replace: true });
   }
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-bg/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+    <header className="sticky top-0 z-20 border-b border-border bg-bg/95 backdrop-blur">
+      <div className="mx-auto flex min-h-[68px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           to={currentUser ? "/" : "/login"}
-          className="flex min-w-0 items-center gap-2.5"
+          className="flex min-w-0 items-center gap-3"
           onClick={closeMenu}
         >
           <Logo />
-          <span className="whitespace-nowrap font-display text-sm font-semibold text-ink">
+          <span className="whitespace-nowrap font-display text-sm font-semibold text-ink sm:text-base">
             WalangBrownout <span className="text-muted">Appliances</span>
           </span>
         </Link>
 
         {currentUser && (
           <>
-            {/* Desktop navigation */}
-            <nav
-              className="hidden items-center gap-1 xl:flex"
-              aria-label="Modules"
-            >
-              {visibleLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  className={navLinkClass}
-                  onClick={closeMenu}
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-            </nav>
-
-            <div className="hidden items-center gap-4 border-l border-border pl-6 xl:flex">
+            <div className="hidden items-center gap-5 xl:flex">
               <UserDetails user={currentUser} />
               <button
                 type="button"
                 onClick={handleLogout}
-                className="whitespace-nowrap rounded-md px-2 py-1.5 text-sm text-danger transition-colors hover:bg-danger/10"
+                className="rounded-md border border-border px-3 py-2 text-sm font-medium text-muted transition-colors hover:border-danger/40 hover:bg-danger/10 hover:text-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
               >
-                Log out
+                Sign out
               </button>
             </div>
 
-            {/* Mobile menu toggle */}
             <button
               type="button"
               onClick={() => setOpen((previous) => !previous)}
-              className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-power xl:hidden"
-              aria-label={open ? "Close menu" : "Open menu"}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border text-ink transition-colors hover:bg-surface-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-power xl:hidden"
+              aria-label={open ? "Close navigation" : "Open navigation"}
               aria-expanded={open}
-              aria-controls="mobile-navigation"
+              aria-controls="site-navigation"
             >
               <svg
                 className="h-5 w-5"
@@ -165,41 +153,74 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Mobile navigation */}
       {currentUser && (
         <nav
-          id="mobile-navigation"
-          className={`border-t border-border px-6 py-5 xl:hidden ${open ? "block" : "hidden"}`}
-          aria-label="Mobile modules"
+          className="mx-auto hidden max-w-6xl items-end gap-5 border-t border-border px-6 py-3 xl:flex"
+          aria-label="Main navigation"
         >
-          <div className="flex flex-col gap-1">
-            {visibleLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={closeMenu}
-                className={({ isActive }) =>
-                  `rounded-md px-3 py-2.5 text-sm transition-colors ${
-                    isActive
-                      ? "bg-power/10 text-power"
-                      : "text-muted hover:bg-surface-2 hover:text-ink"
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-
-          <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-            <UserDetails user={currentUser} />
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-md px-2 py-1.5 text-sm text-danger transition-colors hover:bg-danger/10"
+          {visibleGroups.map((group, index) => (
+            <div
+              key={group.label}
+              className={`min-w-max ${index > 0 ? "border-l border-border pl-5" : ""}`}
             >
-              Log out
-            </button>
+              <p className="mb-1 px-3 font-mono text-[9px] uppercase tracking-[0.18em] text-muted">
+                {group.label}
+              </p>
+              <div className="flex items-center gap-1">
+                {group.links.map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    end={link.to === "/"}
+                    className={navLinkClass}
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
+      )}
+
+      {currentUser && (
+        <nav
+          id="site-navigation"
+          className={`border-t border-border px-4 py-4 sm:px-6 xl:hidden ${open ? "block" : "hidden"}`}
+          aria-label="Main navigation"
+        >
+          <div className="mx-auto max-w-6xl space-y-4">
+            {visibleGroups.map((group) => (
+              <section key={group.label} aria-label={group.label}>
+                <h2 className="mb-1 px-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
+                  {group.label}
+                </h2>
+                <div className="flex flex-col gap-1">
+                  {group.links.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      end={link.to === "/"}
+                      onClick={closeMenu}
+                      className={navLinkClass}
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            <div className="flex items-center justify-between border-t border-border pt-4">
+              <UserDetails user={currentUser} />
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-md px-3 py-2 text-sm font-medium text-danger transition-colors hover:bg-danger/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-power"
+              >
+                Sign out
+              </button>
+            </div>
           </div>
         </nav>
       )}
