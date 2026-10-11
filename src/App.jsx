@@ -1,12 +1,5 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import Navbar from "./components/common/Navbar";
-import Footer from "./components/common/Footer";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Home from "./components/Home";
 import PurchasingDashboard from "./components/PurchasingDashboard";
@@ -14,7 +7,6 @@ import WarehouseScannerApp from "./components/WarehouseScannerApp";
 import OnlineStorefront from "./components/OnlineStorefront";
 import ManagementReporting from "./components/ManagementReporting";
 import Login from "./components/Login";
-import Signup from "./components/Signup";
 import MyOrders from "./components/MyOrders";
 import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
@@ -42,18 +34,13 @@ function NotFound() {
 }
 
 function AppLayout() {
-  const location = useLocation();
-
-  // Only show footer on these paths
-  const showFooter = ["/"].includes(location.pathname);
-
   return (
     <div className="flex min-h-screen flex-col bg-bg font-body text-ink">
       <Navbar />
       <div className="flex-1">
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<Navigate to="/login" replace />} />
 
           <Route
             path="/"
@@ -90,16 +77,15 @@ function AppLayout() {
           <Route
             path="/reporting"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <ManagementReporting />
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/orders"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin", "staff"]}>
                 <MyOrders />
               </ProtectedRoute>
             }
@@ -108,7 +94,6 @@ function AppLayout() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-      {showFooter && <Footer />}
     </div>
   );
 }

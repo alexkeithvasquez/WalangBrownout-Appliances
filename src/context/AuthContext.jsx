@@ -48,26 +48,6 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  async function signup(name, email, password) {
-    try {
-      const response = await apiRequest('/auth/register', {
-        method: 'POST',
-        body: {
-          name,
-          email,
-          password,
-          password_confirmation: password,
-          device_name: 'walangbrownout-web',
-        },
-        auth: false,
-      })
-      setCurrentUser(storeSession(response))
-      return { ok: true }
-    } catch (error) {
-      return { ok: false, error: error.message }
-    }
-  }
-
   async function login(email, password) {
     try {
       const response = await apiRequest('/auth/login', {
@@ -96,7 +76,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, isLoading, signup, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

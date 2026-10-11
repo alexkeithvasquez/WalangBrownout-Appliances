@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Card from "./common/Card";
 import Button from "./common/Button";
 import PageHeader from "./common/PageHeader";
@@ -89,7 +89,7 @@ export default function Login() {
             Inventory Management System
           </p>
           <h2 className="mt-3 max-w-sm font-display text-2xl font-bold text-ink">
-            Real-time visibility across every module.
+            Inventory and purchasing tools in one workspace.
           </h2>
         </div>
       </div>
@@ -99,8 +99,8 @@ export default function Login() {
         <div className="mx-auto w-full max-w-md">
           <PageHeader
             eyebrow="Account"
-            title="Log in"
-            subtitle="Access your inventory dashboard."
+            title="Sign in"
+            subtitle="Use the Admin or Staff account assigned to you."
           />
 
           <Card className="p-6">
@@ -148,15 +148,12 @@ export default function Login() {
               {error && <p className="text-sm text-danger">{error}</p>}
 
               <Button type="submit" variant="primary" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Signing in..." : "Log in"}
+                {isSubmitting ? "Signing in..." : "Sign in"}
               </Button>
             </form>
 
-            <p className="mt-5 text-center text-sm text-muted">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-online hover:underline">
-                Sign up
-              </Link>
+            <p className="mt-5 text-center text-xs leading-relaxed text-muted">
+              Accounts are provisioned through the Admin and Staff seeders. Public sign-up is disabled.
             </p>
           </Card>
         </div>
