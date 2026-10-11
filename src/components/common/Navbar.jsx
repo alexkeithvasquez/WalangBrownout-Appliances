@@ -9,26 +9,26 @@ const LINKS = [
     roles: ["staff", "admin"],
   },
   {
-    to: "/purchasing",
-    label: "Purchasing",
-    roles: ["staff", "manager", "admin"],
-  },
-  {
     to: "/warehouse",
     label: "Warehouse",
-    roles: ["staff", "manager", "admin"],
+    roles: ["staff", "admin"],
+  },
+  {
+    to: "/purchasing",
+    label: "Purchasing",
+    roles: ["staff", "admin"],
   },
   {
     to: "/storefront",
     label: "Storefront",
-    roles: ["customer", "staff", "manager", "admin"],
+    roles: ["staff", "admin"],
   },
-  { to: "/reporting", label: "Reporting", roles: ["manager", "admin"] },
   {
     to: "/orders",
     label: "My Orders",
-    roles: ["customer", "staff", "manager", "admin"],
+    roles: ["staff", "admin"],
   },
+  { to: "/reporting", label: "Reports", roles: ["admin"] },
 ];
 
 function navLinkClass({ isActive }) {
@@ -103,7 +103,7 @@ export default function Navbar() {
           <>
             {/* Desktop navigation */}
             <nav
-              className="hidden items-center gap-1 lg:flex"
+              className="hidden items-center gap-1 xl:flex"
               aria-label="Modules"
             >
               {visibleLinks.map((link) => (
@@ -118,7 +118,7 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="hidden items-center gap-4 border-l border-border pl-6 lg:flex">
+            <div className="hidden items-center gap-4 border-l border-border pl-6 xl:flex">
               <UserDetails user={currentUser} />
               <button
                 type="button"
@@ -133,7 +133,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setOpen((previous) => !previous)}
-              className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-power lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-power xl:hidden"
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="mobile-navigation"
@@ -169,7 +169,7 @@ export default function Navbar() {
       {currentUser && (
         <nav
           id="mobile-navigation"
-          className={`border-t border-border px-6 py-5 lg:hidden ${open ? "block" : "hidden"}`}
+          className={`border-t border-border px-6 py-5 xl:hidden ${open ? "block" : "hidden"}`}
           aria-label="Mobile modules"
         >
           <div className="flex flex-col gap-1">
@@ -181,7 +181,7 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   `rounded-md px-3 py-2.5 text-sm transition-colors ${
                     isActive
-                      ? "bg-surface-2 text-ink"
+                      ? "bg-power/10 text-power"
                       : "text-muted hover:bg-surface-2 hover:text-ink"
                   }`
                 }
