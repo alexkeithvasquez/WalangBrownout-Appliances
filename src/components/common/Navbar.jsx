@@ -4,6 +4,11 @@ import { useAuth } from "../../context/AuthContext";
 
 const LINKS = [
   {
+    to: "/",
+    label: "Overview",
+    roles: ["staff", "admin"],
+  },
+  {
     to: "/purchasing",
     label: "Purchasing",
     roles: ["staff", "manager", "admin"],
@@ -27,10 +32,10 @@ const LINKS = [
 ];
 
 function navLinkClass({ isActive }) {
-  return `relative py-1 font-body text-sm transition-colors ${
+  return `rounded-md px-3 py-2 font-body text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-power ${
     isActive
-      ? "text-ink after:absolute after:-bottom-[21px] after:left-0 after:h-[2px] after:w-full after:bg-power"
-      : "text-muted hover:text-ink"
+      ? "bg-power/10 text-power"
+      : "text-muted hover:bg-surface-2 hover:text-ink"
   }`;
 }
 
@@ -85,11 +90,12 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link
           to={currentUser ? "/" : "/login"}
-          className="flex items-center gap-2.5"
+          className="flex min-w-0 items-center gap-2.5"
           onClick={closeMenu}
         >
-          <span className="font-body text-sm">
-            WalangBrownout Appliances
+          <Logo />
+          <span className="whitespace-nowrap font-display text-sm font-semibold text-ink">
+            WalangBrownout <span className="text-muted">Appliances</span>
           </span>
         </Link>
 
@@ -97,7 +103,7 @@ export default function Navbar() {
           <>
             {/* Desktop navigation */}
             <nav
-              className="hidden items-center gap-8 md:flex"
+              className="hidden items-center gap-1 lg:flex"
               aria-label="Modules"
             >
               {visibleLinks.map((link) => (
@@ -112,7 +118,7 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="hidden items-center gap-4 border-l border-border pl-6 md:flex">
+            <div className="hidden items-center gap-4 border-l border-border pl-6 lg:flex">
               <UserDetails user={currentUser} />
               <button
                 type="button"
@@ -127,7 +133,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setOpen((previous) => !previous)}
-              className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-power md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-power lg:hidden"
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="mobile-navigation"
@@ -163,7 +169,7 @@ export default function Navbar() {
       {currentUser && (
         <nav
           id="mobile-navigation"
-          className={`border-t border-border px-6 py-5 md:hidden ${open ? "block" : "hidden"}`}
+          className={`border-t border-border px-6 py-5 lg:hidden ${open ? "block" : "hidden"}`}
           aria-label="Mobile modules"
         >
           <div className="flex flex-col gap-1">
